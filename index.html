@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Marten of the Dunes</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23a8875a'/%3E%3Ccircle cx='24' cy='28' r='4'/%3E%3Ccircle cx='40' cy='28' r='4'/%3E%3Cellipse cx='32' cy='40' rx='5' ry='3.5'/%3E%3C/svg%3E" />
-  <script type="module" crossorigin src="./assets/index-BbwHfU-6.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-CGvF7UYO.css">
+  <script type="module" crossorigin src="./assets/index-CGMK6g5E.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-BQV2dIpC.css">
 </head>
 <body>
   <canvas id="game"></canvas>
@@ -21,6 +21,10 @@
     <div id="compass"><div id="compass-strip"></div><div id="compass-needle"></div></div>
     <div id="minimap-wrap"><canvas id="minimap" width="220" height="220"></canvas><div id="minimap-label">Horsfall dune lakes · 300 m</div></div>
     <div id="reticle"><div class="dot"></div><div id="target-bracket"></div><div id="target-label"></div><div id="charge-ring"></div></div>
+    <div id="pounce-hint"></div>
+    <div id="quarry-view" class="hidden"><div class="qv-title">Tracking · through your eyes</div><div class="qv-label"></div></div>
+    <div id="banner"><div class="b-main"></div><div class="b-sub"></div></div>
+    <div id="coach" class="hidden"><div class="coach-title">How to hunt <span id="coach-step"></span></div><div id="coach-text"></div></div>
     <div id="prompt"></div>
     <div id="feed"></div>
     <div id="vitals">
@@ -67,6 +71,7 @@
             <option value="realistic">Realistic</option>
           </select>
         </label>
+        <label class="check"><input type="checkbox" id="opt-coach" checked /> Hunting coach</label>
         <label>Graphics
           <select id="opt-quality">
             <option value="low">Low</option>
@@ -125,11 +130,12 @@
         <div><b>Click</b> — pounce. <b>Hold</b> to coil for a longer leap; aim up to snatch birds from shrubs.</div>
         <div><b>E</b> — eat a catch, a cached carcass, or ripe berries (hold position).</div>
         <div><b>Space</b> — jump. Next to a trunk: climb. <b>W/S</b> up/down, <b>A/D</b> around. Look along a limb and press <b>W</b> to walk out on it.</div>
-        <div><b>Q</b> or <b>right mouse</b> — sense: animals within ~35 m glow through the leaves (prey amber, predators red), voles and mice leave scent trails, ripe fruit is marked.</div>
-        <div><b>R</b> — track the animal in your sights: it keeps glowing, its distance and alertness bar stay on screen (an arrow points to it when it is off screen), and the leaves between you thin out. Press R again to switch or stop.</div>
+        <div><b>Q</b> or <b>right mouse</b> — sense: animals within ~35 m show through the leaves in their own colours with an amber rim (predators red), visible ones get a thin outline, voles and mice leave scent trails, ripe fruit is marked.</div>
+        <div><b>R</b> — track the animal in your sights: its marker, distance and alertness bar stay on screen (an arrow points to it when it is off screen), a close-up of it appears at the bottom right, and the leaves between you thin out. Press R again to switch or stop.</div>
         <div><b>Listen</b> — <b>♪</b> marks a bird singing nearby (with its name up close), <b>( )</b> ripples mark something rustling in the litter, and a <b>dashed bracket</b> marks an animal you can see. Fruiting huckleberry and salal show black and purple berries; stand next to them and press <b>E</b>.</div>
         <div><b>F</b> — stand on hind legs to scan: the view narrows and you spot animals farther off.</div>
         <div><b>V</b> — nose-cam (first person) · <b>M</b> — map · <b>Tab</b> — field guide</div>
+        <div><b>How to hunt</b> — 1. <b>Listen</b> (♪, rustles) or <b>hold Q</b>: hidden animals show as amber shapes. 2. <b>R</b> tracks one. 3. <b>C</b> crouch and creep closer while it <b>feeds</b> (head down); <b>stop</b> while it <b>watches</b> (head up): moving in its view alarms it. 4. Within about 3.5 m the bracket turns solid: <b>green</b> = it hasn't noticed you, <b>amber</b> = it's watching, <b>red</b> = alarmed. <b>Click</b> to pounce (a click leaps ~2.5 m; <b>hold</b> to coil for up to ~4 m and release when the prompt says so). An alert animal may dodge. Your marten eats as soon as it lands.</div>
         <div><b>Survival tips</b> — bobcats outrun you in the open but can barely push through dense huckleberry/salal; climb high if one corners you. OHVs can't see you: listen for engines and watch for orange whip flags over the dune crests.</div>
       </div>
       <button id="btn-controls-close" class="primary">Close</button>
