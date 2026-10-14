@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Marten of the Dunes</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23a8875a'/%3E%3Ccircle cx='24' cy='28' r='4'/%3E%3Ccircle cx='40' cy='28' r='4'/%3E%3Cellipse cx='32' cy='40' rx='5' ry='3.5'/%3E%3C/svg%3E" />
+  <script type="module" crossorigin src="./assets/index-DRgJZ1Nm.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-CGvF7UYO.css">
+</head>
+<body>
+  <canvas id="game"></canvas>
+  <canvas id="overlay"></canvas>
+
+  <div id="hud" class="hidden">
+    <div id="hud-top-left">
+      <div id="clock">Day 1 · 06:30</div>
+      <div id="season">Fall</div>
+      <div id="habitat">—</div>
+    </div>
+    <div id="compass"><div id="compass-strip"></div><div id="compass-needle"></div></div>
+    <div id="minimap-wrap"><canvas id="minimap" width="220" height="220"></canvas><div id="minimap-label">Horsfall dune lakes · 300 m</div></div>
+    <div id="reticle"><div class="dot"></div><div id="target-bracket"></div><div id="target-label"></div><div id="charge-ring"></div></div>
+    <div id="prompt"></div>
+    <div id="feed"></div>
+    <div id="vitals">
+      <div id="cover"><span id="cover-icon">◐</span><span id="cover-text">Partly hidden</span></div>
+      <div class="bar-label"><span>ENERGY RESERVE</span><span id="energy-text">— kJ</span></div>
+      <div class="bar" id="energy-bar"><div class="fill" id="energy-fill"></div><div class="mark" style="left:25%"></div></div>
+      <div id="energy-sub"><span id="burn-text">−0.0 kJ/s</span><span id="energy-status"></span></div>
+      <div class="bar small" id="stamina-bar"><div class="fill" id="stamina-fill"></div></div>
+    </div>
+    <div id="threat-text"></div>
+    <div id="help-hint">H — controls · Tab — field guide · M — map · Esc — pause</div>
+  </div>
+
+  <div id="vignette"></div>
+  <div id="flash"></div>
+
+  <div id="loading" class="screen">
+    <div class="panel narrow">
+      <h1>Marten of the Dunes</h1>
+      <p class="sub">Loading the Oregon Dunes…</p>
+      <div class="bar"><div class="fill" id="load-fill"></div></div>
+      <p id="load-text" class="tiny">Starting</p>
+    </div>
+  </div>
+
+  <div id="title" class="screen hidden">
+    <div class="panel">
+      <div class="kicker">Oregon Dunes National Recreation Area · Horsfall dune lakes</div>
+      <h1>Marten of the Dunes</h1>
+      <p class="sub">You are a Humboldt marten — a threatened, one-kilogram carnivore living in a narrow strip of shore-pine forest between the Pacific and the open sand. Keep your energy up by hunting the prey real martens eat and stripping huckleberry and salal. Avoid bobcats by slipping into dense shrubs, and think twice before crossing open sand where off-highway vehicles roam.</p>
+      <div class="opts">
+        <label>Season
+          <select id="opt-season">
+            <option value="summer">Summer (salal ripe)</option>
+            <option value="fall" selected>Fall (peak berries)</option>
+            <option value="winter">Winter (varied thrush, rain)</option>
+            <option value="spring">Spring (no fruit)</option>
+          </select>
+        </label>
+        <label>Difficulty
+          <select id="opt-diff">
+            <option value="easy">Easy</option>
+            <option value="normal" selected>Normal</option>
+            <option value="realistic">Realistic</option>
+          </select>
+        </label>
+        <label>Graphics
+          <select id="opt-quality">
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+          </select>
+        </label>
+      </div>
+      <p id="touch-note" class="tiny hidden">This game needs a keyboard and mouse — open it on a laptop or desktop computer.</p>
+      <button id="btn-start" class="primary">Begin</button>
+      <div class="controls-grid">
+        <div><b>WASD</b> move (trot)</div><div><b>Shift</b> bound (sprint)</div>
+        <div><b>C</b> crouch / stalk</div><div><b>Z</b> walk toggle</div>
+        <div><b>Mouse</b> look · aim</div><div><b>Click</b> pounce (hold to charge)</div>
+        <div><b>E</b> eat prey / berries</div><div><b>Space</b> jump / climb tree</div>
+        <div><b>Q / Right-click</b> sniff (senses)</div><div><b>F</b> stand up and scan (zooms)</div>
+        <div><b>V</b> first-person nose-cam</div><div><b>Scroll</b> camera distance</div>
+      </div>
+      <p class="credits">Diet: DNA metabarcoding of marten scats (Morfin, Hallerud, Twining &amp; Levi, in prep.) and Eriksson et al. 2019, PLOS ONE. Terrain: USGS 3DEP lidar · Imagery: USDA NAIP. Built with Three.js and Blender.</p>
+    </div>
+  </div>
+
+  <div id="pause" class="screen hidden">
+    <div class="panel narrow">
+      <h2>Paused</h2>
+      <button id="btn-resume" class="primary">Resume</button>
+      <button id="btn-guide">Field guide</button>
+      <button id="btn-controls">Controls</button>
+      <div class="opts col">
+        <label>Mouse sensitivity <input id="opt-sens" type="range" min="0.3" max="2.5" step="0.05" value="1" /></label>
+        <label>Volume <input id="opt-vol" type="range" min="0" max="1" step="0.05" value="0.8" /></label>
+        <label>Graphics
+          <select id="opt-quality2"><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select>
+        </label>
+      </div>
+      <button id="btn-quit">Quit to title</button>
+    </div>
+  </div>
+
+  <div id="guide" class="screen hidden">
+    <div class="panel wide">
+      <h2>Field guide — what Humboldt martens eat</h2>
+      <p class="tiny">Prey found by DNA metabarcoding of Oregon Dunes marten scats (Morfin, Hallerud, Twining &amp; Levi, in prep.) and by Eriksson et al. (2019). FO = frequency of occurrence in the Eriksson et al. (2019) scats, where reported. Energy is metabolisable kJ for a whole animal (mass × energy density × assimilation).</p>
+      <div id="guide-body"></div>
+      <button id="btn-guide-close" class="primary">Close</button>
+    </div>
+  </div>
+
+  <div id="controls" class="screen hidden">
+    <div class="panel narrow">
+      <h2>Controls</h2>
+      <div class="controls-grid one">
+        <div><b>W A S D</b> — trot · <b>Shift</b> bound · <b>C</b> crouch-stalk · <b>Z</b> walk</div>
+        <div><b>Mouse</b> — look and aim. The reticle locks onto prey in pounce range.</div>
+        <div><b>Click</b> — pounce. <b>Hold</b> to coil for a longer leap; aim up to snatch birds from shrubs.</div>
+        <div><b>E</b> — eat a catch, a cached carcass, or ripe berries (hold position).</div>
+        <div><b>Space</b> — jump. Next to a trunk: climb. <b>W/S</b> up/down, <b>A/D</b> around. Look along a limb and press <b>W</b> to walk out on it.</div>
+        <div><b>Q</b> or <b>right mouse</b> — sniff: reveals nearby prey, fruit and predators.</div>
+        <div><b>Listen</b> — <b>♪</b> marks a bird singing nearby (with its name up close), <b>( )</b> ripples mark something rustling in the litter, and a <b>dashed bracket</b> marks an animal you can see. Fruiting huckleberry and salal show black and purple berries; stand next to them and press <b>E</b>.</div>
+        <div><b>F</b> — stand on hind legs to scan: the view narrows and you spot animals farther off.</div>
+        <div><b>V</b> — nose-cam (first person) · <b>M</b> — map · <b>Tab</b> — field guide</div>
+        <div><b>Survival tips</b> — bobcats outrun you in the open but can barely push through dense huckleberry/salal; climb high if one corners you. OHVs can't see you: listen for engines and watch for orange whip flags over the dune crests.</div>
+      </div>
+      <button id="btn-controls-close" class="primary">Close</button>
+    </div>
+  </div>
+
+  <div id="bigmap" class="screen hidden">
+    <div class="panel wide map">
+      <canvas id="bigmap-canvas" width="900" height="752"></canvas>
+      <div id="bigmap-legend"></div>
+      <p class="tiny">Press M to close. Aerial: USDA NAIP. 3.0 × 2.5 km around the Horsfall dune lakes, southern Oregon Dunes NRA.</p>
+    </div>
+  </div>
+
+  <div id="summary" class="screen hidden">
+    <div class="panel wide">
+      <div class="kicker" id="sum-kicker">Your marten's story</div>
+      <h2 id="sum-title">—</h2>
+      <p id="sum-cause" class="sub"></p>
+      <div id="sum-stats"></div>
+      <h3>Your scats, metabarcoded</h3>
+      <p class="tiny">Every few game-hours your marten left a scat containing what it ate since the last one. Here is the frequency of occurrence (FO) of each prey in <i>your</i> scats next to the real Oregon Dunes martens.</p>
+      <div id="sum-diet"></div>
+      <p id="sum-note" class="tiny"></p>
+      <button id="btn-again" class="primary">Play again</button>
+      <button id="btn-title">Title screen</button>
+    </div>
+  </div>
+
+</body>
+</html>
